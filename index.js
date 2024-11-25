@@ -4,6 +4,7 @@ import path from 'path';
 import http from 'http';
 import cloud from './cloud/main.js';
 import userRoutes from './routes/userRoutes.js';
+import cors from 'cors';
 
 const __dirname = path.resolve();
 
@@ -24,6 +25,11 @@ export const app = express();
 app.set('trust proxy', true);
 app.use(express.json());
 
+app.use(cors({
+  origin: 'http://localhost:3000',
+  methods: ['GET', 'POST', 'PUT', 'DELETE'],
+  allowedHeaders: ['Content-Type', 'Authorization'],
+}));
 
 app.use('/public', express.static(path.join(__dirname, '/public')));
 
