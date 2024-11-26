@@ -5,6 +5,7 @@ import http from 'http';
 import cloud from './cloud/main.js';
 import userRoutes from './routes/userRoutes.js';
 import cors from 'cors';
+import parseDashboard from 'parse-dashboard';
 
 const __dirname = path.resolve();
 
@@ -20,29 +21,43 @@ export const config = {
   allowClientClassCreation: true,
 };
 
+const dashboardConfig = {
+  apps: [
+    {
+      serverURL: 'http://localhost:1337/parse',
+      appId: 'myAppId',
+      masterKey: 'myMasterKey',
+      appName: 'MyApplication',
+    },
+  ],
+  users: [
+    {
+      user: 'admin',
+      pass: 'password',
+    },
+  ],
+};
+
+const dashboard = new parseDashboard(dashboardConfig, { allowInsecureHTTP: true });
+
 export const app = express();
 
 app.set('trust proxy', true);
 app.use(express.json());
 
-app.use(cors({
-  origin: 'http://localhost:3000',
-  methods: ['GET', 'POST', 'PUT', 'DELETE'],
-  allowedHeaders: ['Content-Type', 'Authorization'],
-}));
+// CORS Configuration
+app.use(cors());
 
 app.use('/public', express.static(path.join(__dirname, '/public')));
-
-
+app.use('/dashboard', dashboard);
 app.use('/api/users', userRoutes);
 
 if (!process.env.TESTING) {
   const mountPath = process.env.PARSE_MOUNT || '/parse';
   const server = new ParseServer(config);
-  await server.start();
+  server.start();
   app.use(mountPath, server.app);
 }
-
 
 app.get('/', (req, res) => {
   res.status(200).send('Parse Server is up and running!');
@@ -55,5 +70,5 @@ if (!process.env.TESTING) {
     console.log('parse-server-example running on port ' + port + '.');
   });
 
-  await ParseServer.createLiveQueryServer(httpServer);
+  ParseServer.createLiveQueryServer(httpServer);
 }
