@@ -6,6 +6,7 @@ import cloud from './cloud/main.js';
 import userRoutes from './routes/userRoutes.js';
 import cors from 'cors';
 import parseDashboard from 'parse-dashboard';
+import dashboardConfig from "./parse-dashboard-config.json" assert { type: 'json' };
 
 const __dirname = path.resolve();
 
@@ -16,26 +17,9 @@ export const config = {
   masterKey: 'myMasterKey',
   serverURL: 'http://localhost:1337/parse',
   liveQuery: {
-    classNames: ['Posts', 'Comments'],
+    classNames: ['Usernames', 'Passwords'],
   },
   allowClientClassCreation: true,
-};
-
-const dashboardConfig = {
-  apps: [
-    {
-      serverURL: 'http://localhost:1337/parse',
-      appId: 'myAppId',
-      masterKey: 'myMasterKey',
-      appName: 'MyApplication',
-    },
-  ],
-  users: [
-    {
-      user: 'admin',
-      pass: 'password',
-    },
-  ],
 };
 
 const dashboard = new parseDashboard(dashboardConfig, { allowInsecureHTTP: true });
@@ -45,7 +29,7 @@ export const app = express();
 app.set('trust proxy', true);
 app.use(express.json());
 
-// CORS Configuration
+
 app.use(cors());
 
 app.use('/public', express.static(path.join(__dirname, '/public')));

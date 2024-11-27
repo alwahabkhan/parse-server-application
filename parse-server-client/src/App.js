@@ -1,7 +1,9 @@
 import { BrowserRouter, Routes, Route } from "react-router-dom";
-import { useState } from "react"; // Import useState
+import { useState } from "react";
 import Login from './components/Login.jsx';
 import Signup from './components/Signup.jsx';
+import LiveUserData from "./components/LivePosts.jsx";
+import "./parse.js"
 
 function App() {
   const [sessionToken, setSessionToken] = useState(null);
@@ -11,10 +13,11 @@ function App() {
       <Routes>
         <Route
           path="/"
-          element={sessionToken ? <h1>Welcome to the Dashboard</h1> : <Login setSessionToken={setSessionToken} />}
+          element={sessionToken ? <LiveUserData /> : <Login setSessionToken={setSessionToken} />}
         />
         <Route path="/Login" element={<Login setSessionToken={setSessionToken} />} />
         <Route path="/Signup" element={<Signup />} />
+        <Route path="/LiveUserData" element={<LiveUserData />} />
       </Routes>
     </BrowserRouter>
   );
